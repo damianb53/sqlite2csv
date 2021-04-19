@@ -9,7 +9,6 @@ import sys
 import csv
 import sqlite3
 import os.path
-import pandas as pd
 from sqlite3 import Error
 
 def convert(file_name='data.db'):
