@@ -2,16 +2,19 @@
 
 '''
 A simple python script that converts each table from sqlite3 database
-given in the script arguments to a separate csv (comma separated values) file in the output directory.
+given in the script arguments to a separate csv (comma separated values)
+file in the output directory.
 '''
 
 import sys
 import csv
 import sqlite3
 import os.path
-from sqlite3 import Error
+
 
 def convert(file_name='data.db'):
+    'Converts given database to csv file.'
+
     if not os.path.exists(file_name):
         print(f'{file_name} does not exists')
         return
@@ -19,20 +22,22 @@ def convert(file_name='data.db'):
     with sqlite3.connect(file_name) as conn:
         cursor = conn.cursor()
 
-        tables = cursor.execute('SELECT name FROM sqlite_master WHERE type="table";') 
+        tables = cursor.execute(
+            'SELECT name FROM sqlite_master WHERE type="table";')
         table_names = [name[0] for name in tables]
 
         for table in table_names:
             res = cursor.execute(f'SELECT * FROM {table}')
             names = [description[0] for description in cursor.description]
 
-            csv_writer = csv.writer(open(f'output/{table}.csv','w'))
+            csv_writer = csv.writer(open(f'output/{table}.csv', 'w'))
             csv_writer.writerow(names)
             csv_writer.writerows(res)
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print('no file specified')
-    for file_name in sys.argv[1:]:
-        print(f'Exporting database from {file_name}')
-        convert(file_name=file_name)
+    for arg in sys.argv[1:]:
+        print(f'Exporting database from {arg}')
+        convert(file_name=arg)
